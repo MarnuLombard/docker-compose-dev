@@ -1,0 +1,44 @@
+php:
+  build: "./php"
+  volumes:
+    - "./php/config:/usr/local/etc"
+    - "./php/logs:/var/log/php"
+    - "/Users/marnu/Work:/var/www"
+  ports:
+    - "9000:9000"
+  links:
+    - "redis"
+    - "mysql"
+    - "mail"
+  environment:
+    REDIS_PORT: "6379"
+redis:
+  image: "redis:latest"
+  volumes:
+    - "./redis/data:/data"
+  command: "--appendonly yes"
+  ports:
+    - "6379:6379"
+mysql:
+  image: "mysql:5.5.53"
+  volumes:
+    - "./mysql/data:/var/lib/mysql"
+  ports:
+    - "3306:3306"
+  environment:
+    MYSQL_ROOT_PASSWORD: root
+mail:
+  image: "zolweb/docker-mailcatcher"
+  ports:
+    - "1080:1080"
+nginx:
+  image: "nginx:latest"
+  volumes:
+    - "./nginx/config:/etc/nginx"
+    - "./nginx/logs:/var/log/nginx"
+    - "/Users/marnu/Work:/var/www"
+  ports:
+    - "80:80"
+    - "443:443"
+  links:
+    - "php"
